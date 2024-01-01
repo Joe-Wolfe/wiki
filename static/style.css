@@ -2,13 +2,13 @@ body {
     font-family: "Lato", sans-serif;
 }
 
-/* side bar html*/
-/**************************************/
+/* side bar html
+==========================================*/
 .sidebar {
     width: 130px;
-    position: fixed;
+    position: absolute;
     top: 68px;
-    left: 10px;
+    left: 10%;
     background: #eee;
     overflow-x: hidden;
     padding: 8px 0;
@@ -27,8 +27,8 @@ body {
 }
 
 
-/* top bar html*/
-/**************************************/
+/* top bar html
+==========================================*/
 
 .navbar {
     overflow: hidden;
@@ -48,10 +48,36 @@ body {
     color: black;
 }
 
+.navbar .navbar-right {
+    float: right;
+}
 
+.navbar::after {
+    content: "";
+    display: table;
+    clear: both;
+}
 
 header,
 main {
     /* sidewith  + desired left margin  */
-    margin-left: 140px;
+    margin-left: calc(10% + 130px);
+    margin-right: 10%;
+}
+
+/* sign in, sign up, 
+==============================================*/
+
+.user-form {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    padding: 10px 10px;
+    background-color: #eee;
+
+}
+
+.input {
+    float: right;
+    margin-left: 10px;
 }

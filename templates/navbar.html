@@ -7,6 +7,14 @@
         <a href="/">Links</a>
         <a href="/">For</a>
         <a href="/">Site</a>
+
+        <span class="navbar-right">
+            {% if not g.user %}
+            <a href="/login">Login</a>
+            <a href="/signup">Sign up!</a>
+            {% else %}
+            <a href="/logout">Logout</a>
+            {% endif %}
     </div>
 </header>
 

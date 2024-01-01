@@ -18,7 +18,7 @@ def connect_db(app):
     db.create_all()
 
 
-class Users(db.Model):
+class User(db.Model):
     """Users in the system."""
 
     __tablename__ = "users"
@@ -29,8 +29,26 @@ class Users(db.Model):
     email = db.Column(db.String(50), nullable=False, unique=True)
     character_name = db.Column(db.String(30), nullable=False)
 
+    @classmethod
+    def signup(cls, username, password, email, character_name):
+        """Sign up user.
+        Hashes password and adds user to system.
+        """
 
-class Categories(db.Model):
+        hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
+
+        user = User(
+            username=username,
+            password=hashed_pwd,
+            email=email,
+            character_name=character_name,
+        )
+
+        db.session.add(user)
+        return user
+
+
+class Category(db.Model):
     """Categories in the wiki."""
 
     __tablename__ = "categories"
@@ -44,7 +62,7 @@ class Categories(db.Model):
         db.Integer, db.ForeignKey('users.id',), nullable=False)
 
 
-class Pages(db.Model):
+class Page(db.Model):
     """Pages in the wiki."""
 
     __tablename__ = "pages"
@@ -61,7 +79,7 @@ class Pages(db.Model):
         'categories.id',), nullable=False)
 
 
-class Sections(db.Model):
+class Section(db.Model):
     """Sections in the wiki."""
 
     __tablename__ = "sections"
@@ -78,7 +96,7 @@ class Sections(db.Model):
     page_id = db.Column(db.Integer, db.ForeignKey('pages.id',), nullable=False)
 
 
-class searchIndexes(db.Model):
+class searchIndex(db.Model):
     """Search indexes for the wiki."""
 
     __tablename__ = "searchIndexes"

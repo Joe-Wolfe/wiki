@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Sign Up
+{% endblock %}
+
+{% block content %}
+{% from "form_template.html" import render_form with context %}
+
+<div class="user-form">
+    <h1>Welcome to the Wiki</h1>
+    {{ render_form(form) }}
+</div>
+
+{% endblock %}
