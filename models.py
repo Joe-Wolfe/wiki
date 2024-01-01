@@ -15,6 +15,7 @@ def connect_db(app):
 
     db.app = app
     db.init_app(app)
+    db.create_all()
 
 
 class Users(db.Model):
@@ -50,7 +51,7 @@ class Pages(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(100), nullable=False, unique=True)
-    synopsis = db.Column(db.db.String(280), nullable=False)
+    synopsis = db.Column(db.String(280), nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.utcnow)

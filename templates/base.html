@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <nav>
+        {% from "navbar.html" import show_navbar with context %}
+        {{ show_navbar()}}
+    </nav>
+
+    <aside>
+        {% from "sidebar.html" import show_sidebar with context %}
+        {{ show_sidebar()}}
+    </aside>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+
+</html>
