@@ -19,6 +19,13 @@
     </aside>
 
     <main>
+        {% with messages = get_flashed_messages(with_categories= true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <span class="{{category }}">{{ message }}</span> <!-- Add the category as a class -->
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </main>
 </body>

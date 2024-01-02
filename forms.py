@@ -12,3 +12,10 @@ class UserAddForm(FlaskForm):
                             DataRequired(), EqualTo('password', message='Passwords must match')])
     email = StringField('Email', validators=[DataRequired(), Email()])
     character_name = StringField('Character Name', validators=[DataRequired()])
+
+
+class UserLoginForm(FlaskForm):
+    """Form for logging in users."""
+
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[Length(min=6)])

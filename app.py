@@ -6,7 +6,7 @@ from sqlalchemy import or_
 
 # from forms import UserAddForm, LoginForm, MessageForm, EditUserForm
 from models import db, connect_db, User, Category, Page, Section, searchIndex
-from forms import UserAddForm
+from forms import UserAddForm, UserLoginForm
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
@@ -74,7 +74,7 @@ def signup():
             db.session.commit()
 
         except IntegrityError:
-            flash("Username already taken", 'danger')
+            flash("Username already taken!", 'error')
             return render_template('users/signup.html', form=form)
 
         do_login(user)
@@ -83,6 +83,27 @@ def signup():
 
     else:
         return render_template('users/signup.html', form=form)
+
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    """Handle user login."""
+
+    if g.user:
+        return redirect('/')
+
+    form = UserLoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data,
+                                 form.password.data)
+
+        if user:
+            do_login(user)
+            return redirect("/")
+        flash("Invalid credentials.", 'error')
+
+    return render_template('users/login.html', form=form)
 
 
 @app.route('/logout', methods=["GET"])

@@ -71,7 +71,7 @@ main {
 .user-form {
     position: absolute;
     left: 50%;
-    transform: translate(-50%);
+    transform: translate(-50%, 15%);
     padding: 10px 10px;
     background-color: #eee;
 
@@ -80,4 +80,15 @@ main {
 .input {
     float: right;
     margin-left: 10px;
+}
+
+.error {
+    color: red;
+    font-size: 32px;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    z-index: 1;
+
+
 }

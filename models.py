@@ -47,6 +47,20 @@ class User(db.Model):
         db.session.add(user)
         return user
 
+    @classmethod
+    def authenticate(cls, username, password):
+        """Find user with `username` and `password`.
+        If can't find matching user or if password is wrong, returns False.
+        If user is found and password is correct, returns user instance.
+        """
+
+        user = User.query.filter_by(username=username).first()
+
+        if user and bcrypt.check_password_hash(user.password, password):
+            return user
+        else:
+            return False
+
 
 class Category(db.Model):
     """Categories in the wiki."""

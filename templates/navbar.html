@@ -11,8 +11,9 @@
         <span class="navbar-right">
             {% if not g.user %}
             <a href="/login">Login</a>
-            <a href="/signup">Sign up!</a>
+            <a href="/register">Sign up!</a>
             {% else %}
+            <a href="/users/{{ g.user.id }}">{{ g.user.username }} ToDo</a>
             <a href="/logout">Logout</a>
             {% endif %}
     </div>
