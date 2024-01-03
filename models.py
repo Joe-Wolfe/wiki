@@ -68,7 +68,8 @@ class Category(db.Model):
     __tablename__ = "categories"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    category = db.Column(db.String(30), nullable=False, unique=True)
+    name = db.Column(db.String(30), nullable=False, unique=True)
+    description = db.Column(db.Text, nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.utcnow)

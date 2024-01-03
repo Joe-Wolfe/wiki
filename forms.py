@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators
+from wtforms import Form, StringField, TextAreaField, PasswordField, validators, HiddenField
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
 
@@ -19,3 +19,11 @@ class UserLoginForm(FlaskForm):
 
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6)])
+
+
+class CategoryForm(FlaskForm):
+    """Form for adding categories."""
+
+    name = StringField('Name', validators=[DataRequired()])
+    description = TextAreaField('Description', validators=[Optional()])
+    created_by = HiddenField('Created By', validators=[DataRequired()])

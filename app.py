@@ -6,7 +6,7 @@ from sqlalchemy import or_
 
 # from forms import UserAddForm, LoginForm, MessageForm, EditUserForm
 from models import db, connect_db, User, Category, Page, Section, searchIndex
-from forms import UserAddForm, UserLoginForm
+from forms import UserAddForm, UserLoginForm, CategoryForm
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
@@ -111,6 +111,37 @@ def logout():
     """Handle user logout."""
     do_logout()
     return redirect('/')
+
+#####################################################################
+# categories
+
+
+@app.route('/categories')
+def show_categories():
+    """Show all categories"""
+    categories = Category.query.all()
+    return render_template('categories/categories.html', categories=categories)
+
+
+@app.route('/categories/add', methods=["GET", "POST"])
+def add_category():
+    """Add a category"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/")
+    form = CategoryForm()
+    if form.validate_on_submit():
+        category = Category(
+            name=form.name.data,
+            description=form.description.data,
+            created_by=form.created_by.data
+        )
+        db.session.add(category)
+        db.session.commit()
+        return redirect("/categories")
+    else:
+        form.created_by.data = g.user.id
+        return render_template("categories/add_category.html", form=form)
 
 
 @app.route('/')

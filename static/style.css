@@ -68,7 +68,7 @@ main {
 /* sign in, sign up, 
 ==============================================*/
 
-.user-form {
+.rendered-form {
     position: absolute;
     left: 50%;
     transform: translate(-50%, 15%);
@@ -91,4 +91,39 @@ main {
     z-index: 1;
 
 
+}
+
+/* general layout css
+==============================================*/
+
+.page-title {
+    display: flex;
+    justify-content: space-between;
+    /* Distributes space between the h1 text and the form */
+    align-items: center;
+    /* Optional: Aligns the elements vertically */
+}
+
+.add-edit-btn {
+    float: right;
+}
+
+/* categories
+==============================================*/
+
+.category-form {
+    background-color: #eee;
+    width: 25%;
+}
+
+p textarea {
+    width: 100%;
+    height: 100px;
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    resize: none;
 }
