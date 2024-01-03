@@ -3,6 +3,7 @@
 {% block title %}Categories{% endblock %}
 
 {% block content %}
+
 <h4>Tags: TBD</h4>
 <div>
     <h1 class="page-title">Categories
@@ -12,7 +13,7 @@
 </div>
 <p>This page contains a list of all the Categories in the Wiki</p>
 <hr>
-<ul>
+<ul class="directory">
     {% for category in categories %}
     <li><a href="/category/{{category.name}}">{{ category.name }}</a></li>
     {% else %}

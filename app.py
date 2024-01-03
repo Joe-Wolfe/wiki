@@ -119,7 +119,8 @@ def logout():
 @app.route('/categories')
 def show_categories():
     """Show all categories"""
-    categories = Category.query.all()
+    categories = Category.query.filter_by(
+        is_active=True).order_by(Category.name).all()
     return render_template('categories/categories.html', categories=categories)
 
 
@@ -142,6 +143,58 @@ def add_category():
     else:
         form.created_by.data = g.user.id
         return render_template("categories/add_category.html", form=form)
+
+
+@app.route('/category/<string:category_name>')
+def show_category(category_name):
+    """Show a category"""
+    category = Category.query.filter_by(name=category_name).first()
+    pages = Page.query.filter_by(
+        category_id=category.id).order_by(Page.title).all()
+    return render_template('categories/category.html', category=category, pages=pages)
+
+
+@app.route('/category/<string:category_name>/edit', methods=["GET", "POST"])
+def edit_category(category_name):
+    """Edit a category"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/")
+    category = Category.query.filter_by(name=category_name).first()
+    form = CategoryForm(obj=category)
+    if form.validate_on_submit():
+        category.name = form.name.data
+        category.description = form.description.data
+        db.session.commit()
+        return redirect("/categories")
+    else:
+        return render_template("categories/edit_category.html", form=form)
+
+
+@app.route('/category/<string:category_name>/deactivate', methods=["POST"])
+def deactivate_category(category_name):
+    """deactivates a category"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/")
+    category = Category.query.filter_by(name=category_name).first()
+    category.is_active = False
+    db.session.commit()
+
+    return redirect("/categories")
+
+
+@app.route('/category/<string:category_name>/activate', methods=["POST"])
+def activate_category(category_name):
+    """activates a category"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/")
+    category = Category.query.filter_by(name=category_name).first()
+    category.is_active = True
+    db.session.commit()
+
+    return redirect("/categories")
 
 
 @app.route('/')

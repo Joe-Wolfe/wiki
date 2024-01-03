@@ -1,0 +1,39 @@
+{% extends 'base.html'%}
+
+{% block title %}
+{{ category.name }}
+{% endblock %}
+
+{% block content %}
+{% if category.is_active %}
+<h1 class='page-title'>{{category.name}}<form action="/category/{{category.name}}/edit"> <button class="add-edit-btn"
+            type="submit">Edit
+            Category</button>
+    </form>
+</h1>
+<p>{{category.description}}</p>
+<hr>
+<ul class='directory'>
+    {% if category.pages %}
+    <h2>Pages in this category:</h2>
+
+    {% for page in category.pages %}
+    <li><a href="/page/{{page.title}}">{{page.title}}</a></li>
+
+    {% endfor %}
+    {% else %}
+    <li>No pages found</li>
+    {% endif %}
+    <form action="/category/{{category.name}}/deactivate" method="post"> <button class="activate-deactivate-btn"
+            type="submit">DEACTIVATE</button>
+</ul>
+{% else %}
+<h1 class='page-title'>
+    <bold>{{category.name}} IS NOT ACTIVE!</bold>
+    <form action="/category/{{category.name}}/activate" method="post"> <button class="activate-deactivate-btn"
+            type="submit">REACTIVATE</button>
+    </form>
+</h1>
+<h2>Reactivate it to restore this category</h2>
+{% endif %}
+{% endblock %}

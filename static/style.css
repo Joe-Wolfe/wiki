@@ -108,6 +108,18 @@ main {
     float: right;
 }
 
+ul.directory {
+    list-style-type: none;
+    /* Removes the bullet points */
+    font-size: x-large;
+}
+
+.activate-deactivate-btn {
+    position: fixed;
+    bottom: 5%;
+    right: 10%;
+}
+
 /* categories
 ==============================================*/
 

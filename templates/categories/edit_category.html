@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
 {% block title %}
-New Category
+Edit Category
 {% endblock %}
 
 {% block content %}
 {% from "form_template.html" import render_form with context %}
 
 <div class="rendered-form category-form">
-    <h1>New Category</h1>
+    <h1>Edit Category</h1>
     {{ render_form(form) }}
 </div>
 
