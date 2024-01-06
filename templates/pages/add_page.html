@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+New Page
+{% endblock %}
+
+{% block content %}
+{% from "form_template.html" import render_form with context %}
+
+<div class="rendered-form category-form">
+    <h1>New Page</h1>
+    {{ render_form(form) }}
+</div>
+
+{% endblock %}

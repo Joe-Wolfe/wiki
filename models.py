@@ -100,9 +100,9 @@ class Section(db.Model):
     __tablename__ = "sections"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(100), nullable=False, unique=True)
+    title = db.Column(db.String(100), nullable=False, unique=False)
     body = db.Column(db.Text, nullable=False)
-    position = db.Column(db.Integer, nullable=False)
+    position = db.Column(db.Integer, nullable=False, unique=True)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.utcnow)

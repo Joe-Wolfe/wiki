@@ -1,12 +1,12 @@
 import os
 
-from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import Flask, render_template, request, flash, redirect, session, g, url_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 
 # from forms import UserAddForm, LoginForm, MessageForm, EditUserForm
 from models import db, connect_db, User, Category, Page, Section, searchIndex
-from forms import UserAddForm, UserLoginForm, CategoryForm
+from forms import UserAddForm, UserLoginForm, CategoryForm, PageForm, SectionForm
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
     os.environ.get('DATABASE_URL', 'postgresql:///wiki'))
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = False
+app.config['SQLALCHEMY_ECHO'] = True
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
 app.app_context().push()
@@ -195,6 +195,84 @@ def activate_category(category_name):
     db.session.commit()
 
     return redirect("/categories")
+
+#####################################################################
+# pages
+
+
+@app.route('/pages')
+def show_pages():
+    """Show all pages"""
+    pages = Page.query.filter_by(
+        is_active=True).order_by(Page.title).all()
+    return render_template('pages/pages.html', pages=pages)
+
+
+@app.route("/page/add", methods=["GET", "POST"])
+def add_page():
+    """Add a page"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/pages")
+    form = PageForm()
+    categories = [("", "Choose one")]+[(str(category.id), category.name)
+                                       for category in Category.query.filter_by(is_active=True).all()]
+    form.category_id.choices = categories
+    form.created_by.data = g.user.id
+
+    if form.validate_on_submit():
+        page = Page(
+            title=form.title.data,
+            synopsis=form.synopsis.data,
+            created_by=form.created_by.data,
+            category_id=form.category_id.data
+        )
+        db.session.add(page)
+        db.session.commit()
+        return redirect("/pages")
+    else:
+        form.created_by.data = g.user.id
+        return render_template("pages/add_page.html", form=form)
+
+
+@app.route('/page/<string:page_title>')
+def show_page(page_title):
+    """Show a page"""
+    page = Page.query.filter_by(title=page_title).first()
+    sections = Section.query.filter_by(
+        page_id=page.id).order_by(Section.position).all()
+    forms = [SectionForm(obj=section) for section in sections]
+    forms += [SectionForm()]
+
+    return render_template('pages/page.html', page=page, sections=sections, forms=forms)
+
+
+@app.route('/page/<string:page_title>/addCategory', methods=["GET", "POST"])
+def add_section(page_title):
+    """Add a section to a page"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/")
+    page = Page.query.filter_by(title=page_title).first()
+    form = SectionForm()
+    if form.validate_on_submit():
+        section = Section(
+            title=form.title.data,
+            position=form.position.data,
+            body=form.body.data,
+            created_by=g.user.id,
+            page_id=page.id
+        )
+        db.session.add(section)
+        db.session.commit()
+
+        return redirect("/page/" + page_title)
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(
+                    f"Error in the {getattr(form, field).label.text} field - {error}")
+        return redirect(url_for('show_page', page_title=page.title))
 
 
 @app.route('/')

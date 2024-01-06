@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators, HiddenField
+from wtforms import Form, StringField, TextAreaField, PasswordField, validators, HiddenField, SelectField
 from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
 
@@ -27,3 +27,20 @@ class CategoryForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[Optional()])
     created_by = HiddenField('Created By', validators=[DataRequired()])
+
+
+class PageForm(FlaskForm):
+    """Form for adding pages."""
+
+    title = StringField('Title', validators=[DataRequired()])
+    category_id = SelectField('Category', validators=[DataRequired()])
+    synopsis = TextAreaField('Synopsis', validators=[Optional()])
+    created_by = HiddenField('Created By', validators=[DataRequired()])
+
+
+class SectionForm(FlaskForm):
+    """Form for adding sections."""
+
+    title = StringField('Title', validators=[DataRequired()])
+    position = HiddenField('Position', validators=[DataRequired()])
+    body = TextAreaField('Content', validators=[Optional()])

@@ -1,0 +1,99 @@
+{% extends 'base.html'%}
+
+{% block title %}
+{{ page.title }}
+{% endblock %}
+
+{% block content %}
+{% if page.is_active %}
+<h1 class='page-title'>{{page.title}}<form action="/page/{{page.title}}/edit"> <button class="add-edit-btn"
+            type="submit">Edit
+            Page</button>
+    </form>
+</h1>
+<p>{{page.synopsis}}</p>
+<hr>
+
+{% if sections %}
+{% for section in sections %}
+<div id="section{{section.position}}">
+    <h2 class='section-heading'><span>{{section.title}}</span>
+        <input type="button" id="sectionAddBtn{{section.position}}" class="add-edit-btn" value="Edit Section"
+            onclick="showFields('{{section.position|string}}')" />
+    </h2>
+    <p>{{section.body}}</p>
+    <hr>
+</div>
+<div id="addEditSectionform{{section.position|string}}" style="display: none;">
+    <h2>Edit Section</h2>
+    {% from "pages/section_template.html" import render_form with context %}
+
+    {{ render_form(forms[loop.index0], section.position|string, page.title) }}
+</div>
+{% endfor %}
+
+
+<div id="section{{sections|length}}">
+    <h2 class='section-heading'>
+        <input type="button" id="sectionAddBtn{{sections|length}}" class="add-edit-btn" value="Add Section"
+            onclick="showFields('{{sections|length|string}}')" />
+    </h2>
+</div>
+<div id="addEditSectionform{{sections|length|string}}" style="display: none;">
+
+
+</div>
+
+
+
+{% else %}
+
+
+
+
+<div id="section0">
+    <h2 class='section-heading'><span>This Page is empty.</span>
+
+        <input type="button" id="sectionAddBtn0" class="add-edit-btn" value="Add Section" onclick="showFields(0)" />
+    </h2>
+</div>
+
+<div id="addEditSectionform0" style="display: none;">
+    <h2>New Section</h2>
+    {% from "pages/section_template.html" import render_form with context %}
+
+    {{ render_form(forms[-1], '0', page.title) }}
+
+</div>
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+{% else %}
+<h1 class='page-title'>
+    <bold>{{page.title}} IS NOT ACTIVE!</bold>
+    <form action="/page/{{page.title}}/activate" method="post"> <button class="activate-deactivate-btn"
+            type="submit">REACTIVATE</button>
+    </form>
+</h1>
+{% endif %}
+
+<script>
+    function showFields(form_id) {
+        document.getElementById("section" + form_id).style.display = "none";
+        document.getElementById("addEditSectionform" + form_id).style.display = "block";
+    }
+
+    function hideFields(form_id) {
+        document.getElementById("section" + form_id).style.display = "block";
+        document.getElementById("addEditSectionform" + form_id).style.display = "none";
+    }
+</script>
+{% endblock %}
