@@ -14,10 +14,10 @@
 <p>{{category.description}}</p>
 <hr>
 <ul class='directory'>
-    {% if category.pages %}
+    {% if pages %}
     <h2>Pages in this category:</h2>
 
-    {% for page in category.pages %}
+    {% for page in pages %}
     <li><a href="/page/{{page.title}}">{{page.title}}</a></li>
 
     {% endfor %}
