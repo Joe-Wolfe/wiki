@@ -6,6 +6,9 @@
 
 {% block content %}
 {% if page.is_active %}
+
+
+
 <h1 class='page-title'>{{page.title}}<form action="/page/{{page.title}}/edit"> <button class="add-edit-btn"
             type="submit">Edit
             Page</button>
@@ -15,6 +18,7 @@
 <hr>
 
 {% if sections %}
+
 {% for section in sections %}
 <div id="section{{section.position}}">
     <h2 class='section-heading'><span>{{section.title}}</span>
@@ -28,7 +32,7 @@
     <h2>Edit Section</h2>
     {% from "pages/section_template.html" import render_form with context %}
 
-    {{ render_form(forms[loop.index0], section.position|string, page.title) }}
+    {{ render_form(forms[loop.index0], section.position|string, page.title, True, section.id) }}
 </div>
 {% endfor %}
 
@@ -40,7 +44,10 @@
     </h2>
 </div>
 <div id="addEditSectionform{{sections|length|string}}" style="display: none;">
+    <h2>Edit Section</h2>
+    {% from "pages/section_template.html" import render_form with context %}
 
+    {{ render_form(forms[sections|length], sections|length|string, page.title) }}
 
 </div>
 

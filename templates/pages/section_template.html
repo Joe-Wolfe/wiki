@@ -1,4 +1,4 @@
-{% macro render_form(form, form_id, page_name) %}
+{% macro render_form(form, form_id, page_name, is_edit, section_id) %}
 {% if form.error %}
 <div class="alert alert-danger">
     {% for error in form.errors %}
@@ -6,24 +6,28 @@
     {% endfor %}
 </div>
 {% endif %}
-<form method=POST action="/page/{{page_name}}/addCategory">
-    {{ form.csrf_token }}
-    {{ form.position(value=form_id, id=form.position.id + form_id) }}
-    <p>
-        {{ form.title.label }}
-        {{ form.title(class_="input", id=form.title.id + form_id) }}
-        {% for error in form.title.errors %}
-        <span class="form-text text-danger">{{ error }}</span>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.body.label }}
-        {{ form.body(class_="input", id=form.body.id + form_id) }}
-        {% for error in form.body.errors %}
-        <span class="form-text text-danger">{{ error }}</span>
-        {% endfor %}
-    </p>
-    <button type="submit" class="btn btn-primary">Submit</button>
-    <button type="button" class="btn btn-secondary" onclick="hideFields('{{form_id}}')">Cancel</button>
-</form>
-{% endmacro %}
+{% if is_edit %}
+<form method=POST action="/page/{{page_name}}/editSection/{{section_id}}">
+    {% else %}
+    <form method=POST action="/page/{{page_name}}/addSection">
+        {% endif %}
+        {{ form.csrf_token }}
+        {{ form.position(value=form_id, id=form.position.id + form_id) }}
+        <p>
+            {{ form.title.label }}
+            {{ form.title(class_="input", id=form.title.id + form_id) }}
+            {% for error in form.title.errors %}
+            <span class="form-text text-danger">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.body.label }}
+            {{ form.body(class_="input", id=form.body.id + form_id) }}
+            {% for error in form.body.errors %}
+            <span class="form-text text-danger">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-secondary" onclick="hideFields('{{form_id}}')">Cancel</button>
+    </form>
+    {% endmacro %}
