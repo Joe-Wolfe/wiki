@@ -4,26 +4,40 @@ from flask import Flask, render_template, request, flash, redirect, session, g, 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 
+from sqlalchemy_searchable import search
+
 # from forms import UserAddForm, LoginForm, MessageForm, EditUserForm
-from models import db, connect_db, User, Category, Page, Section, searchIndex
+from models import db, connect_db, User, Category, Page, Section
 from forms import UserAddForm, UserLoginForm, CategoryForm, PageForm, SectionForm
+from sqlalchemy_searchable import sync_trigger
+
+
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
 
+
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     os.environ.get('DATABASE_URL', 'postgresql:///wiki'))
+
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
+
+
 app.app_context().push()
 connect_db(app)
+with db.engine.connect() as connection:
+    sync_trigger(connection, 'sections',
+                 'search_vector', ['body'])
+    print("synced trigger")
 
 
 #####################################################################
 # User signup/login/logout
+
 
 @app.before_request
 def add_user_to_g():
@@ -240,14 +254,14 @@ def show_page(page_title):
     """Show a page"""
     page = Page.query.filter_by(title=page_title).first()
     sections = Section.query.filter_by(
-        page_id=page.id).order_by(Section.position).all()
+        page_title=page.title).order_by(Section.position).all()
     forms = [SectionForm(obj=section) for section in sections]
     forms += [SectionForm()]
 
     return render_template('pages/page.html', page=page, sections=sections, forms=forms)
 
 
-@app.route('/page/<string:page_title>/addCategory', methods=["GET", "POST"])
+@app.route('/page/<string:page_title>/addSection', methods=["GET", "POST"])
 def add_section(page_title):
     """Add a section to a page"""
     if not g.user:
@@ -261,7 +275,7 @@ def add_section(page_title):
             position=form.position.data,
             body=form.body.data,
             created_by=g.user.id,
-            page_id=page.id
+            page_title=page.title
         )
         db.session.add(section)
         db.session.commit()
@@ -273,6 +287,46 @@ def add_section(page_title):
                 flash(
                     f"Error in the {getattr(form, field).label.text} field - {error}")
         return redirect(url_for('show_page', page_title=page.title))
+
+
+@app.route('/page/<string:page_title>/editSection/<string:section_id>', methods=["GET", "POST"])
+def edit_section(page_title, section_id):
+    """Edit a section on a page"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/")
+    page = Page.query.filter_by(title=page_title).first()
+    # Fetch the section from the database
+    section = Section.query.get(section_id)
+    form = SectionForm()
+    if form.validate_on_submit():
+        section.title = form.title.data
+        section.position = form.position.data
+        section.body = form.body.data
+        section.created_by = g.user.id
+        section.page_title = page.title
+        db.session.commit()
+
+        return redirect("/page/" + page_title)
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(
+                    f"Error in the {getattr(form, field).label.text} field - {error}")
+        return redirect(url_for('show_page', page_title=page.title))
+
+
+#####################################################################
+# search
+
+@app.route('/search')
+def searchWiki():
+    """Search for a page"""
+    search_term = request.args.get('q')
+    sections = Section.query.search(search_term).all()
+    print(sections)
+    print(search_term)
+    return render_template('pages/search.html', sections=sections, search_term=search_term)
 
 
 @app.route('/')

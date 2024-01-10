@@ -1,10 +1,25 @@
 from datetime import datetime
 
+from flask import current_app
+
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy.query import Query
+from sqlalchemy_searchable import sync_trigger
+
+from sqlalchemy_utils.types import TSVectorType
+from sqlalchemy_searchable import SearchQueryMixin, make_searchable
+
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
+
+make_searchable(db.metadata)
+db.configure_mappers()
+
+
+class SectionQuery(Query, SearchQueryMixin):
+    pass
 
 
 def connect_db(app):
@@ -12,9 +27,11 @@ def connect_db(app):
 
     You should call this in your Flask app.
     """
-
+    print("Connecting to database...")
     db.app = app
     db.init_app(app)
+
+    db.configure_mappers()
     db.create_all()
 
 
@@ -96,27 +113,19 @@ class Page(db.Model):
 
 class Section(db.Model):
     """Sections in the wiki."""
-
+    query_class = SectionQuery
     __tablename__ = "sections"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(100), nullable=False, unique=False)
     body = db.Column(db.Text, nullable=False)
-    position = db.Column(db.Integer, nullable=False, unique=True)
+    position = db.Column(db.Integer, nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.utcnow)
     created_by = db.Column(
         db.Integer, db.ForeignKey('users.id',), nullable=False)
-    page_id = db.Column(db.Integer, db.ForeignKey('pages.id',), nullable=False)
+    page_title = db.Column(db.String(100), db.ForeignKey(
+        'pages.title',), nullable=False)
 
-
-class searchIndex(db.Model):
-    """Search indexes for the wiki."""
-
-    __tablename__ = "searchIndexes"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    in_title = db.Column(db.Boolean, nullable=False, default=True)
-    word_count = db.Column(db.Integer, nullable=False)
-    page_id = db.Column(db.Integer, db.ForeignKey('pages.id',), nullable=False)
+    search_vector = db.Column(TSVectorType('body'))

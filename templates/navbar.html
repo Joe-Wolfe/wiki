@@ -9,6 +9,9 @@
         <a href="/">Site</a>
 
         <span class="navbar-right">
+            <form id="search-bar" action="/search" method="GET">
+                <input type="text" name="q" placeholder="Search...">
+            </form>
             {% if not g.user %}
             <a href="/login">Login</a>
             <a href="/signup">Sign up!</a>

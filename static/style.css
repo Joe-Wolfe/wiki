@@ -58,6 +58,10 @@ body {
     clear: both;
 }
 
+#search-bar {
+    display: inline-block;
+}
+
 header,
 main {
     /* sidewith  + desired left margin  */
