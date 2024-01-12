@@ -1,4 +1,5 @@
 import os
+import random
 
 from flask import Flask, render_template, request, flash, redirect, session, g, url_for
 from sqlalchemy.exc import IntegrityError
@@ -317,8 +318,29 @@ def edit_section(page_title, section_id):
         return redirect(url_for('show_page', page_title=page.title))
 
 
+@app.route('/pages/random')
+def random_page():
+    """Redirects to a random page"""
+    pages = Page.query.filter_by(is_active=True).all()
+    page = random.choice(pages)
+    if (pages):
+        return redirect("/page/" + page.title)
+    else:
+        return redirect("/pages")
+
+
+@app.route('/pages/latest')
+def latest_page():
+    """Redirects to the latest page"""
+    pages = Page.query.filter_by(is_active=True).order_by(
+        Page.created_at.desc()).all()
+    if (pages):
+        return redirect("/page/" + pages[0].title)
+    else:
+        return redirect("/pages")
 #####################################################################
 # search
+
 
 @app.route('/search')
 def searchWiki():
@@ -329,7 +351,10 @@ def searchWiki():
                                                   .options(joinedload(Section.page))
                                                   .search(search_term)
                                                   .all())]
-    pages += section_pages
+    # Use a dict to remove duplicates while preserving order
+    pages_dict = {page.id: page for page in pages + section_pages}
+    # Convert the dict back to a list
+    pages = list(pages_dict.values())
     print(pages)
     print(search_term)
     return render_template('pages/search.html', pages=pages, search_term=search_term)

@@ -39,6 +39,16 @@ def connect_db(app):
     db.configure_mappers()
     db.create_all()
 
+    # Check if "uncategorized" category exists
+    uncategorized = Category.query.filter_by(name="Uncategorized").first()
+
+    # If it doesn't exist, create it
+    if uncategorized is None:
+        uncategorized = Category(name="Uncategorized",
+                                 description="Default category", created_by=1)
+        db.session.add(uncategorized)
+        db.session.commit()
+
 
 class User(db.Model):
     """Users in the system."""
