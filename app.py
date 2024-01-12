@@ -10,6 +10,7 @@ from sqlalchemy_searchable import search
 from models import db, connect_db, User, Category, Page, Section
 from forms import UserAddForm, UserLoginForm, CategoryForm, PageForm, SectionForm
 from sqlalchemy_searchable import sync_trigger
+from sqlalchemy.orm import joinedload
 
 
 CURR_USER_KEY = "curr_user"
@@ -323,10 +324,15 @@ def edit_section(page_title, section_id):
 def searchWiki():
     """Search for a page"""
     search_term = request.args.get('q')
-    sections = Section.query.search(search_term).all()
-    print(sections)
+    pages = Page.query.search(search_term).all()
+    section_pages = [section.page for section in (Section.query
+                                                  .options(joinedload(Section.page))
+                                                  .search(search_term)
+                                                  .all())]
+    pages += section_pages
+    print(pages)
     print(search_term)
-    return render_template('pages/search.html', sections=sections, search_term=search_term)
+    return render_template('pages/search.html', pages=pages, search_term=search_term)
 
 
 @app.route('/')

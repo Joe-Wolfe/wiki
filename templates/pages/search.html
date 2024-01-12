@@ -7,9 +7,16 @@ Search
 {% block content %}
 
 <h1 class='page-title'>Search</h1>
-{% if sections %}
-{% for section in sections %}
+{% if pages %}
+{% for page in pages %}
 
+<a class='page'>
+    <h2 class='page-title'><a href='{{page.url}}'>{{page.title}}</a></h2>
+    <p class='page-excerpt'>{{page.synopsis}}</p>
+    </h2>
+</a>
+<hr>
+{% endfor %}
 {% endif %}
 
 

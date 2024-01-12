@@ -9,6 +9,7 @@ from sqlalchemy_searchable import sync_trigger
 
 from sqlalchemy_utils.types import TSVectorType
 from sqlalchemy_searchable import SearchQueryMixin, make_searchable
+from sqlalchemy.orm import relationship
 
 
 bcrypt = Bcrypt()
@@ -19,6 +20,10 @@ db.configure_mappers()
 
 
 class SectionQuery(Query, SearchQueryMixin):
+    pass
+
+
+class PageQuery(Query, SearchQueryMixin):
     pass
 
 
@@ -97,6 +102,7 @@ class Category(db.Model):
 class Page(db.Model):
     """Pages in the wiki."""
 
+    query_class = PageQuery
     __tablename__ = "pages"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -109,6 +115,8 @@ class Page(db.Model):
         db.Integer, db.ForeignKey('users.id',), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey(
         'categories.id',), nullable=False)
+
+    search_vector = db.Column(TSVectorType('title', 'synopsis'))
 
 
 class Section(db.Model):
@@ -127,5 +135,6 @@ class Section(db.Model):
         db.Integer, db.ForeignKey('users.id',), nullable=False)
     page_title = db.Column(db.String(100), db.ForeignKey(
         'pages.title',), nullable=False)
+    page = relationship('Page', backref='sections')
 
     search_vector = db.Column(TSVectorType('body'))
