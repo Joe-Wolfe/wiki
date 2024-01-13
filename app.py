@@ -362,6 +362,15 @@ def searchWiki():
     print(search_term)
     return render_template('pages/search.html', pages=pages, search_term=search_term)
 
+#####################################################################
+# contact
+
+
+@app.route('/contact')
+def contact():
+    """Show contact page"""
+    return render_template('/pages/contact.html')
+
 
 @app.route('/')
 def home():
