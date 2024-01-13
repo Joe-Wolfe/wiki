@@ -91,6 +91,7 @@ def signup():
 
         except IntegrityError:
             flash("Username already taken!", 'error')
+            db.session.rollback()
             return render_template('users/signup.html', form=form)
 
         do_login(user)
@@ -195,6 +196,8 @@ def deactivate_category(category_name):
         return redirect("/")
     category = Category.query.filter_by(name=category_name).first()
     category.is_active = False
+
+    """Unca"""
     db.session.commit()
 
     return redirect("/categories")
