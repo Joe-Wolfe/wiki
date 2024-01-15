@@ -254,6 +254,28 @@ def add_page():
         return render_template("pages/add_page.html", form=form)
 
 
+@app.route("/page/<string:page_title>/edit", methods=["GET", "POST"])
+def edit_page(page_title):
+    """Edit a page"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/pages")
+    page = Page.query.filter_by(title=page_title).first()
+    form = PageForm(obj=page)
+    categories = [("", "Choose one")]+[(str(category.id), category.name)
+                                       for category in Category.query.filter_by(is_active=True).all()]
+    form.category_id.choices = categories
+    if form.validate_on_submit():
+        page.title = form.title.data
+        page.synopsis = form.synopsis.data
+        page.created_by = form.created_by.data
+        page.category_id = form.category_id.data
+        db.session.commit()
+        return redirect("/pages")
+    else:
+        return render_template("pages/edit_page.html", form=form)
+
+
 @app.route('/page/<string:page_title>')
 def show_page(page_title):
     """Show a page"""
@@ -319,6 +341,21 @@ def edit_section(page_title, section_id):
                 flash(
                     f"Error in the {getattr(form, field).label.text} field - {error}")
         return redirect(url_for('show_page', page_title=page.title))
+
+
+@app.route('/sections/<section_id>/delete', methods=["POST"])
+def delete_section(section_id):
+    """Delete a section"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/")
+    section = Section.query.get(section_id)
+    page_title = section.page_title
+    db.session.delete(section)
+    db.session.commit()
+    return redirect("/page/" + page_title)
+#####################################################################
+# special links
 
 
 @app.route('/pages/random')

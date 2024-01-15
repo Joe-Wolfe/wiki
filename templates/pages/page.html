@@ -18,15 +18,22 @@
 <hr>
 
 {% if sections %}
-
+<!-- This page has sections 
+    Loop over sections and display -->
 {% for section in sections %}
 <div id="section{{section.position}}">
     <h2 class='section-heading'><span>{{section.title}}</span>
         <input type="button" id="sectionAddBtn{{section.position}}" class="add-edit-btn" value="Edit Section"
             onclick="showFields('{{section.position|string}}')" />
+
+
+        <!-- Delete section form -->
+        <form class="delete-form" action="/sections/{{section.id}}/delete" method="post">
+            <button class="delete-btn" type="submit"
+                onclick="return confirm('Are you sure you want to delete this section?');">Delete Section</button>
+        </form>
     </h2>
     <p>{{section.body}}</p>
-    <hr>
 </div>
 <div id="addEditSectionform{{section.position|string}}" style="display: none;">
     <h2>Edit Section</h2>
@@ -36,7 +43,7 @@
 </div>
 {% endfor %}
 
-
+<!-- Add new section -->
 <div id="section{{sections|length}}">
     <h2 class='section-heading'>
         <input type="button" id="sectionAddBtn{{sections|length}}" class="add-edit-btn" value="Add Section"
@@ -48,16 +55,12 @@
     {% from "pages/section_template.html" import render_form with context %}
 
     {{ render_form(forms[sections|length], sections|length|string, page.title) }}
-
 </div>
 
 
 
+<!-- No sections so only need to create a new section -->
 {% else %}
-
-
-
-
 <div id="section0">
     <h2 class='section-heading'><span>This Page is empty.</span>
 
@@ -75,14 +78,7 @@
 {% endif %}
 
 
-
-
-
-
-
-
-
-
+<!-- This page is deactivated -->
 {% else %}
 <h1 class='page-title'>
     <bold>{{page.title}} IS NOT ACTIVE!</bold>
@@ -91,6 +87,9 @@
     </form>
 </h1>
 {% endif %}
+<form action="/page/{{page.title}}/deactivate" method="post"> <button class="activate-deactivate-btn"
+        type="submit">DEACTIVATE</button>
+</form>
 
 <script>
     function showFields(form_id) {

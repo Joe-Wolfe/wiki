@@ -112,6 +112,12 @@ main {
     float: right;
 }
 
+.delete-form {
+    float: right;
+    display: inline;
+}
+
+
 ul.directory {
     list-style-type: none;
     /* Removes the bullet points */
