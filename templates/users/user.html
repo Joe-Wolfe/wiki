@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{user.username}}'s Bio'
+{% endblock %}
+
+{% block content %}
+
+<h1 class='page-title'>{{user.username}}'s Bio <form action="/users/{{user.id}}/edit"><button type=submit>Edit
+            User</button></form>
+</h1>
+
+<div>
+    <h3>Email: {{user.email}}</h3>
+    <h3>Username: {{user.username}}</h3>
+    <h3>Character: {{user.character_name}}</h3>
+</div>
+
+
+
+
+{% endblock %}

@@ -17,6 +17,20 @@ class UserAddForm(FlaskForm):
                                  DataRequired(), Length(max=30)])
 
 
+class UserEditForm(FlaskForm):
+    """Form for editing users."""
+
+    username = StringField('Username', validators=[
+                           DataRequired(), Length(max=20)])
+    email = StringField('Email', validators=[
+                        DataRequired(), Email(), Length(max=50)])
+    character_name = StringField('Character Name', validators=[
+                                 DataRequired(), Length(max=30)])
+    bio = TextAreaField('Bio', validators=[Optional()])
+    confirm_password = PasswordField('Confirm Password', validators=[
+                                     DataRequired(), Length(min=6)])
+
+
 class UserLoginForm(FlaskForm):
     """Form for logging in users."""
 

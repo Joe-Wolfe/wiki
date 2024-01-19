@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{user.username}}'s Bio'
+{% endblock %}
+
+{% block content %}
+{% from "form_template.html" import render_form with context %}
+
+<div class="rendered-form user-form">
+    <h2 class='section-heading'><span>Edit Bio</span>
+    </h2>
+    {{ render_form(form) }}
+</div>
+<!-- Delete section form -->
+<form class="delete-form" action="/sections/{{section.id}}/delete" method="post">
+    <button class="delete-btn" type="submit"
+        onclick="return confirm('Are you sure you want to delete this section?');">Delete Section</button>
+</form>
+{% endblock %}

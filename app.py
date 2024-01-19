@@ -9,7 +9,7 @@ from sqlalchemy_searchable import search
 
 # from forms import UserAddForm, LoginForm, MessageForm, EditUserForm
 from models import db, connect_db, User, Category, Page, Section
-from forms import UserAddForm, UserLoginForm, CategoryForm, PageForm, SectionForm
+from forms import UserAddForm, UserLoginForm, CategoryForm, PageForm, SectionForm, UserEditForm
 from sqlalchemy_searchable import sync_trigger
 from sqlalchemy.orm import joinedload
 
@@ -407,6 +407,40 @@ def searchWiki():
 def contact():
     """Show contact page"""
     return render_template('/pages/contact.html')
+
+
+#####################################################################
+# BIO
+
+@app.route('/users/<int:user_id>')
+def show_user(user_id):
+    """Show user profile"""
+    user = User.query.get_or_404(user_id)
+    return render_template('users/user.html', user=user)
+
+
+@app.route('/users/<int:user_id>/edit', methods=["GET", "POST"])
+def edit_user(user_id):
+    """Edit user profile"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/")
+    user = User.query.get_or_404(user_id)
+    form = UserEditForm(obj=user)
+    if form.validate_on_submit():
+        if (user_id != g.user.id):
+            flash("Access unauthorized.", "error")
+            return redirect("/")
+        if (not User.authenticate(user.username, form.confirm_password.data)):
+            flash("Incorrect password.", "error")
+            return redirect("/users/" + str(user_id) + "/edit")
+        user.username = form.username.data
+        user.email = form.email.data
+        user.character_name = form.character_name.data
+        db.session.commit()
+        return redirect("/users/" + str(user_id))
+    else:
+        return render_template("users/edit_user.html", form=form, user=user)
 
 
 @app.route('/')
