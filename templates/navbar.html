@@ -1,7 +1,7 @@
 {% macro show_navbar() %}
 
 <header>
-    <h1 id=title-h1><a id="title" href="/">Din Wiki</a></h1>
+    <h1 id=title-h1><a id="main-title" href="/">Din Wiki</a></h1>
     <div class="navbar">
         <a href="/pages">Pages</a>
         <a href="/categories">Categories</a>
@@ -15,7 +15,7 @@
             <a href="/login">Login</a>
             <a href="/signup">Sign up!</a>
             {% else %}
-            <a href="/users/{{ g.user.id }}">{{ g.user.username }} ToDo</a>
+            <a href="/users/{{ g.user.id }}">{{ g.user.username }}</a>
             <a href="/logout">Logout</a>
             {% endif %}
     </div>

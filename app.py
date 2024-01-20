@@ -1,5 +1,6 @@
 import os
 import random
+import uuid
 
 from flask import Flask, render_template, request, flash, redirect, session, g, url_for
 from sqlalchemy.exc import IntegrityError
@@ -149,13 +150,18 @@ def add_category():
         return redirect("/")
     form = CategoryForm()
     if form.validate_on_submit():
-        category = Category(
-            name=form.name.data,
-            description=form.description.data,
-            created_by=form.created_by.data
-        )
-        db.session.add(category)
-        db.session.commit()
+        try:
+            category = Category(
+                name=form.name.data.strip().capitalize(),
+                description=form.description.data,
+                created_by=form.created_by.data
+            )
+            db.session.add(category)
+            db.session.commit()
+        except IntegrityError:
+            flash("Category name already taken!", 'error')
+            db.session.rollback()
+            return render_template('categories/add_category.html', form=form)
         return redirect("/categories")
     else:
         form.created_by.data = g.user.id
@@ -180,9 +186,14 @@ def edit_category(category_name):
     category = Category.query.filter_by(name=category_name).first()
     form = CategoryForm(obj=category)
     if form.validate_on_submit():
-        category.name = form.name.data
-        category.description = form.description.data
-        db.session.commit()
+        try:
+            category.name = form.name.data.strip().capitalize()
+            category.description = form.description.data
+            db.session.commit()
+        except IntegrityError:
+            flash("Category name already taken!", 'error')
+            db.session.rollback()
+            return render_template('categories/edit_category.html', form=form)
         return redirect("/categories")
     else:
         return render_template("categories/edit_category.html", form=form)
@@ -240,18 +251,49 @@ def add_page():
     form.created_by.data = g.user.id
 
     if form.validate_on_submit():
-        page = Page(
-            title=form.title.data,
-            synopsis=form.synopsis.data,
-            created_by=form.created_by.data,
-            category_id=form.category_id.data
-        )
-        db.session.add(page)
-        db.session.commit()
+        try:
+            page = Page(
+                title=form.title.data.strip().capitalize(),
+                synopsis=form.synopsis.data,
+                created_by=form.created_by.data,
+                category_id=form.category_id.data
+            )
+            db.session.add(page)
+            db.session.commit()
+        except IntegrityError:
+            flash("Page title already taken!", 'error')
+            db.session.rollback()
+            return render_template('pages/add_page.html', form=form)
         return redirect("/pages")
     else:
         form.created_by.data = g.user.id
         return render_template("pages/add_page.html", form=form)
+
+
+@app.route('/page/<string:page_title>/deactivate', methods=["POST"])
+def deactivate_page(page_title):
+    """deactivates a page"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/")
+    page = Page.query.filter_by(title=page_title).first()
+    page.is_active = False
+    db.session.commit()
+
+    return redirect("/pages")
+
+
+@app.route('/page/<string:page_title>/activate', methods=["POST"])
+def activate_page(page_title):
+    """activates a page"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/")
+    page = Page.query.filter_by(title=page_title).first()
+    page.is_active = True
+    db.session.commit()
+
+    return redirect("/pages")
 
 
 @app.route("/page/<string:page_title>/edit", methods=["GET", "POST"])
@@ -266,11 +308,16 @@ def edit_page(page_title):
                                        for category in Category.query.filter_by(is_active=True).all()]
     form.category_id.choices = categories
     if form.validate_on_submit():
-        page.title = form.title.data
-        page.synopsis = form.synopsis.data
-        page.created_by = form.created_by.data
-        page.category_id = form.category_id.data
-        db.session.commit()
+        try:
+            page.title = form.title.data.strip().capitalize()
+            page.synopsis = form.synopsis.data
+            page.created_by = form.created_by.data
+            page.category_id = form.category_id.data
+            db.session.commit()
+        except IntegrityError:
+            flash("Page title already taken!", 'error')
+            db.session.rollback()
+            return render_template('pages/edit_page.html', form=form)
         return redirect("/pages")
     else:
         return render_template("pages/edit_page.html", form=form)
@@ -441,6 +488,25 @@ def edit_user(user_id):
         return redirect("/users/" + str(user_id))
     else:
         return render_template("users/edit_user.html", form=form, user=user)
+
+
+@app.route('/users/<int:user_id>/delete', methods=["POST"])
+def deactivate_user(user_id):
+    """deactivates a user"""
+    if not g.user:
+        flash("Access unauthorized.", "error")
+        return redirect("/")
+    user = User.query.get_or_404(user_id)
+    user.is_active = False
+
+    user.email = f'{uuid.uuid4()}@example.com'
+    user.username = f'User {str(uuid.uuid4())[:15]}'
+    user.character_name = f'Character {str(uuid.uuid4())[:20]}'
+    user.password = uuid.uuid4()
+    db.session.commit()
+    logout()
+
+    return redirect("/")
 
 
 @app.route('/')

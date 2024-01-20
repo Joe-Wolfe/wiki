@@ -118,10 +118,6 @@ h6 {
 
 }
 
-.input {
-    float: right;
-    margin-left: 10px;
-}
 
 .error {
     color: red;
@@ -131,6 +127,7 @@ h6 {
     transform: translate(-50%);
     z-index: 1;
 }
+
 
 /* general layout css
 ==============================================*/
@@ -147,9 +144,45 @@ h6 {
     float: right;
 }
 
+.edit-section-btn {
+
+    display: inline;
+    margin-right: 10px;
+    font-size: larger;
+    width: 40px;
+    height: 40px;
+
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: inherit;
+}
+
+
+.section-title {
+    font-size: 28px;
+    font-weight: bold;
+}
+
 .delete-form {
     float: right;
     display: inline;
+    padding-top: 0px;
+    margin-top: 0px;
+}
+
+.delete-btn {
+    float: right;
+    display: inline;
+    margin-right: 10px;
+    font-size: larger;
+    width: 40px;
+    height: 40px;
+
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: inherit;
 }
 
 
@@ -159,10 +192,17 @@ ul.directory {
     font-size: x-large;
 }
 
+.activate-deactivate-container {
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+    justify-content: space-between;
+    clear: both;
+}
+
 .activate-deactivate-btn {
-    position: fixed;
-    bottom: 5%;
-    right: 10%;
+    margin-bottom: 10px;
+    float: right;
 }
 
 /* categories
@@ -193,6 +233,7 @@ p textarea {
     font-size: 20px;
     font-weight: bold;
 
+
 }
 
 /* search
@@ -219,10 +260,14 @@ p textarea {
     margin-bottom: 8px;
 }
 
-#title {
+#main-title {
     text-align: center;
     font-size: 36px;
     font-weight: bold;
     margin-bottom: 10px;
+    text-decoration: none;
+}
+
+a {
     text-decoration: none;
 }
