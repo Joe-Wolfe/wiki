@@ -102,6 +102,7 @@ def signup():
 
     else:
         print("in else")
+        flash(form.errors, 'error')
         return render_template('users/signup.html', form=form)
 
 
