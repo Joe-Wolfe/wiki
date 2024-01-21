@@ -55,7 +55,6 @@ def add_user_to_g():
 
 def do_login(user):
     """Log in user."""
-
     session[CURR_USER_KEY] = user.id
 
 
@@ -515,3 +514,9 @@ def home():
     """Show homepage."""
 
     return render_template('home.html')
+
+
+@app.route('/session')
+def session_data():
+    print(session)
+    return "Check the console for session data."
