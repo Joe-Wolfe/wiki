@@ -24,8 +24,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
     os.environ.get('DATABASE_URL', 'postgresql:///wiki'))
 
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
 
@@ -81,6 +81,7 @@ def signup():
     form = UserAddForm()
 
     if form.validate_on_submit():
+        print("in if")
         try:
             user = User.signup(
                 username=form.username.data,
@@ -94,12 +95,13 @@ def signup():
             flash("Username already taken!", 'error')
             db.session.rollback()
             return render_template('users/signup.html', form=form)
-
+        print("before do_login")
         do_login(user)
 
         return redirect("/")
 
     else:
+        print("in else")
         return render_template('users/signup.html', form=form)
 
 
