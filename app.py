@@ -30,12 +30,11 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 
-app.app_context().push()
-connect_db(app)
-with db.engine.connect() as connection:
-    sync_trigger(connection, 'sections',
-                 'search_vector', ['body'])
-    print("synced trigger")
+with app.app_context():
+    connect_db(app)
+    with db.engine.connect() as connection:
+        sync_trigger(connection, 'sections', 'search_vector', ['body'])
+        print("synced trigger")
 
 
 #####################################################################
