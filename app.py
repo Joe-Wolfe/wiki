@@ -80,7 +80,6 @@ def signup():
     form = UserAddForm()
 
     if form.validate_on_submit():
-        print("in if")
         try:
             user = User.signup(
                 username=form.username.data,
@@ -94,14 +93,11 @@ def signup():
             flash("Username already taken!", 'error')
             db.session.rollback()
             return render_template('users/signup.html', form=form)
-        print("before do_login")
         do_login(user)
 
         return redirect("/")
 
     else:
-        print("in else")
-        flash(form.errors, 'error')
         return render_template('users/signup.html', form=form)
 
 
